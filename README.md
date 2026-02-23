@@ -1,36 +1,192 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Workspace SaaS
 
-## Getting Started
+A production-structured, multi-tenant SaaS application built with:
 
-First, run the development server:
+- Next.js (App Router + TypeScript)
+- Supabase (PostgreSQL + Row Level Security)
+- Anthropic Claude API
+- Vercel deployment
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+This project demonstrates secure multi-user isolation, server-side AI integration, and database-enforced authorization.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Architecture Overview
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Stack
 
-## Learn More
+- Frontend & Server Framework: Next.js (App Router)
+- Database & Auth: Supabase (PostgreSQL + RLS)
+- AI Provider: Anthropic Claude
+- Hosting: Vercel
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# System Design Principles
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Server-First Architecture
 
-## Deploy on Vercel
+All sensitive operations (authentication validation, database writes, AI calls) execute server-side using Next.js Server Actions.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+No external API keys are exposed to the client.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Multi-Tenant Isolation
+
+This is a shared database system where multiple users exist in the same database, but each user only sees their own data.
+
+Isolation is enforced at the database level using PostgreSQL Row Level Security (RLS).
+
+---
+
+## Database-Level Authorization
+
+Instead of filtering data in the frontend like:
+
+.where('user_id', user.id)
+
+Authorization is enforced directly in PostgreSQL using:
+
+using (auth.uid() = user_id)
+
+This prevents data leaks even if frontend logic fails.
+
+---
+
+## Defense in Depth
+
+Security is enforced at multiple layers:
+
+- Server assigns ownership (user_id)
+- RLS enforces row ownership
+- Foreign key constraints enforce relational integrity
+- Secrets remain server-only
+- AI integration abstracted behind service layer
+
+---
+
+# Database Schema
+
+## projects
+
+| Column      | Type      | Description |
+|-------------|-----------|-------------|
+| id          | UUID      | Primary key |
+| user_id     | UUID      | Owner reference |
+| name        | Text      | Project name |
+| created_at  | Timestamp | Creation time |
+
+## documents
+
+| Column      | Type      | Description |
+|-------------|-----------|-------------|
+| id          | UUID      | Primary key |
+| project_id  | UUID      | Project relation |
+| user_id     | UUID      | Owner reference |
+| content     | Text      | Original content |
+| ai_summary  | Text      | Claude-generated summary |
+| created_at  | Timestamp | Creation time |
+
+---
+
+# Security Model
+
+## Authentication
+
+- Supabase Auth
+- JWT stored in HttpOnly cookies
+- Session validated server-side on protected routes
+
+## Authorization
+
+PostgreSQL Row Level Security enabled with policies:
+
+auth.uid() = user_id
+
+## Secret Management
+
+- Claude API key stored in environment variables
+- Never exposed to client
+- AI calls executed only server-side
+
+---
+
+# AI Integration
+
+Claude integration is abstracted inside:
+
+/lib/ai/claude.ts
+
+Server actions call this service layer, keeping business logic separate from provider implementation.
+
+This allows:
+
+- Easy provider swap (Claude → OpenAI)
+- Cleaner architecture
+- Isolated testing
+- Maintainable codebase
+
+---
+
+# Example Data Flow (Summary Generation)
+
+1. User clicks "Generate Summary"
+2. Server action validates session
+3. Database fetches document (RLS enforced)
+4. Claude API called server-side
+5. Summary stored in database
+6. Updated UI rendered
+
+No client-side API calls.
+
+---
+
+# Folder Structure
+
+src/
+  app/
+    login/
+    dashboard/
+      [projectId]/
+    actions/
+  lib/
+    supabase/
+    ai/
+
+---
+
+# Local Development
+
+npm install  
+npm run dev  
+
+Required environment variables:
+
+NEXT_PUBLIC_SUPABASE_URL=  
+NEXT_PUBLIC_SUPABASE_ANON_KEY=  
+ANTHROPIC_API_KEY=  
+
+---
+
+# Future Improvements
+
+- AI rate limiting
+- Idempotent summary generation
+- Stripe subscription tiers
+- Background job queue for long-running AI tasks
+- Optimistic UI updates
+- Improved error handling
+
+---
+
+# Purpose
+
+This project demonstrates:
+
+- Multi-tenant SaaS architecture
+- Database-enforced security
+- Server-side AI integration
+- Production-ready full-stack design
+
+It is structured as a scalable foundation for AI-enabled SaaS platforms.

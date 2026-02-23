@@ -1,65 +1,102 @@
-import Image from "next/image";
+import Link from 'next/link'
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="min-h-screen bg-[#f8f9fc] text-neutral-900">
+
+      {/* Navbar */}
+      <nav className="flex justify-between items-center px-10 py-6 border-b border-neutral-200 bg-white/70 backdrop-blur">
+        <h1 className="text-xl font-semibold tracking-tight text-[#4f46e5]">
+          AI Workspace
+        </h1>
+
+        <div className="flex gap-4">
+          <Link
+            href="/login"
+            className="text-sm font-medium text-neutral-600 py-2 hover:text-[#4f46e5] transition"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Login
+          </Link>
+
+          <Link
+            href="/signup"
+            className="bg-[#4f46e5] text-white px-4 py-2 rounded-md text-sm hover:bg-[#4338ca] transition"
           >
-            Documentation
-          </a>
+            Get Started
+          </Link>
         </div>
-      </main>
-    </div>
-  );
+      </nav>
+
+      {/* Hero */}
+      <section className="flex flex-col items-center justify-center text-center px-6 py-32">
+        <h2 className="text-4xl md:text-5xl font-bold max-w-3xl leading-tight">
+          Organize your thoughts.
+          <br />
+          <span className="text-[#4f46e5]">
+            Let AI summarize them.
+          </span>
+        </h2>
+
+        <p className="mt-6 text-neutral-600 max-w-xl text-lg">
+          Create projects, add documents, and generate AI-powered summaries
+          instantly. Simple. Secure. Private.
+        </p>
+
+        <div className="mt-10 flex gap-4">
+          <Link
+            href="/signup"
+            className="bg-[#4f46e5] text-white px-6 py-3 rounded-md text-sm font-medium hover:bg-[#4338ca] transition"
+          >
+            Start Free
+          </Link>
+
+          <Link
+            href="/login"
+            className="border border-neutral-300 px-6 py-3 rounded-md text-sm font-medium hover:bg-white transition"
+          >
+            Login
+          </Link>
+        </div>
+      </section>
+
+      {/* Feature Section */}
+      <section className="px-10 pb-20">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-8 text-center">
+
+          <div className="bg-white p-6 rounded-lg border border-neutral-200 shadow-sm">
+            <h3 className="font-semibold mb-2 text-[#4f46e5]">
+              Project Based
+            </h3>
+            <p className="text-sm text-neutral-600">
+              Organize documents inside clean project spaces.
+            </p>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg border border-neutral-200 shadow-sm">
+            <h3 className="font-semibold mb-2 text-[#4f46e5]">
+              Secure by Design
+            </h3>
+            <p className="text-sm text-neutral-600">
+              Row Level Security ensures data isolation.
+            </p>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg border border-neutral-200 shadow-sm">
+            <h3 className="font-semibold mb-2 text-[#4f46e5]">
+              AI Powered
+            </h3>
+            <p className="text-sm text-neutral-600">
+              Generate summaries instantly using Gemini.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="text-center py-8 text-sm text-neutral-500 border-t border-neutral-200 bg-white/60 backdrop-blur">
+        © {new Date().getFullYear()} AI Workspace
+      </footer>
+    </main>
+  )
 }
